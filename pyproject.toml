@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "aind_disrnn_utils"
 description = "Generated from aind-library-template"
 license = {text = "MIT"}
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 authors = [
     {name = "Allen Institute for Neural Dynamics"}
 ]
@@ -17,6 +17,7 @@ readme = "README.md"
 dynamic = ["version"]
 
 dependencies = [
+"disentangled_rnns @ git+https://github.com/google-deepmind/disentangled_rnns.git@main#egg=disentangled_rnns",
 ]
 
 [dependency-groups]
@@ -38,7 +39,7 @@ version = {attr = "aind_disrnn_utils.__version__"}
 
 [tool.black]
 line-length = 79
-target_version = ['py310']
+target_version = ['py311']
 exclude = '''
 
 (
