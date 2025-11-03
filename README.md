@@ -11,7 +11,7 @@
 
 
 ## Level of Support
- - [ ] Occasional updates: We are planning on occasional updating this tool with no fixed schedule. Community involvement is encouraged through both issues and pull requests.
+ - Occasional updates: We are planning on occasional updating this tool with no fixed schedule. Community involvement is encouraged through both issues and pull requests.
 
 ## Installation
 To install the software from PyPi
