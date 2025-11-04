@@ -10,9 +10,10 @@ def create_disrnn_dataset(
 
     args:
     df, a trial dataframe, as created by aind_dynamic_foraging_data_utils
-        must have 'ses_idx' as an column which indicates how to divide trials by session
-    ignore_policy (str), must be "include" or "exclude", and determines how to use trials
-        where the mouse did not response
+        must have 'ses_idx' as an column which indicates how to divide
+        trials by session
+    ignore_policy (str), must be "include" or "exclude", and determines
+        how to use trials where the mouse did not response
     batch_size (int) input argument to disrnn dataset
     """
 
