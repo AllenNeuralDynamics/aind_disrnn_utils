@@ -99,4 +99,4 @@ def create_disrnn_dataset(
         batch_size=batch_size,
         batch_mode="random",
     )
-    return dataset, xs, ys
+    return dataset
