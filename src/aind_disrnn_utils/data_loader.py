@@ -48,7 +48,7 @@ def create_disrnn_dataset(
         this_xs = (
             temp[["animal_response", "rewarded"]].shift(-1).to_numpy()[:-1, :]
         )
-        xs[0 : len(this_xs), dex, :] = this_xs
+        xs[0 : len(this_xs), dex, :] = this_xs  # noqa E203
 
     # Determine size of output matrix
     # Output matrix has size [# trials, # sessions, # features]
@@ -60,7 +60,7 @@ def create_disrnn_dataset(
     for dex, ses_idx in enumerate(df["ses_idx"].unique()):
         temp = df.query("ses_idx == @ses_idx")
         this_ys = temp[["animal_response"]].to_numpy()[1:, :]
-        ys[0 : len(this_ys), dex, :] = this_ys
+        ys[0 : len(this_ys), dex, :] = this_ys # noqa E203
 
     # Pack into a DatasetRNN object
     dataset = rnn_utils.DatasetRNN(
