@@ -54,6 +54,13 @@ def create_disrnn_dataset(
     feature_cols = list(features.keys())
     feature_labels = [features[x] for x in feature_cols]
 
+    # Ensure all feature columns are in df_trials
+    for feature in feature_cols:
+        if feature not in df_trials.columns:
+            raise ValueError(
+                "input feature '{}' not in df_trials".format(feature)
+            )
+
     # Determine size of input matrix
     # Input matrix has size [# trials, # sessions, # features]
     max_session_length = (
