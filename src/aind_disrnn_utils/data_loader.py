@@ -1,53 +1,75 @@
+"""
+Tools for loading AIND dynamic foraging data into the disRNN format
+"""
+
+from collections import OrderedDict
+
 import numpy as np
 from disentangled_rnns.library import rnn_utils
 
 
 def create_disrnn_dataset(
-    df, ignore_policy="include", batch_size=None
+    df_trials, ignore_policy="include", batch_size=None, features=None
 ) -> rnn_utils.DatasetRNN:
     """
     Creates a disrnn dataset object
 
     args:
-    df, a trial dataframe, as created by aind_dynamic_foraging_data_utils
+    df_trials, a trial dataframe, as created by aind_dynamic_foraging_data_utils
         must have 'ses_idx' as an column which indicates how to divide
         trials by session
     ignore_policy (str), must be "include" or "exclude", and determines
         how to use trials where the mouse did not response
     batch_size (int) input argument to disrnn dataset
+    features (dict), keys must be columns in df_trials to be used as prediction
+        features. values are the semantic labels for that feature. If None,
+        use previous choice and previous reward
     """
 
     # Input checking
-    if "ses_idx" not in df:
-        raise ValueError("df must contain index of sessions ses_idx")
+    if "ses_idx" not in df_trials:
+        raise ValueError("df_trials must contain index of sessions ses_idx")
     if ignore_policy not in ["include", "exclude"]:
         raise ValueError('ignore_policy must be either "include" or "exclude"')
+
+    # Copy so we can modify
+    df_trials = df_trials.copy()
 
     # Determine the number of classes in the output prediction
     if ignore_policy == "include":
         n_classes = 3
     else:
         n_classes = 2
-        print("Not implemented!")
+        # Remove trials without a response
+        df_trials = df_trials[df_trials["animal_response"] != 2]
 
     # Format inputs
     # Make 0/1 coded reward vector
-    df["rewarded"] = df["earned_reward"].astype(int)
+    df_trials["rewarded"] = df_trials["earned_reward"].astype(int)
+
+    # Break down feature dictionary
+    if features is None:
+        features = {
+            "animal_response": "prev choice",
+            "rewarded": "prev reward",
+        }
+    feature_cols = list(features.keys())
+    feature_labels = [features[x] for x in feature_cols]
 
     # Determine size of input matrix
     # Input matrix has size [# trials, # sessions, # features]
-    max_session_length = df.groupby("ses_idx")["trial"].count().max() - 1
-    num_sessions = len(df["ses_idx"].unique())
+    max_session_length = (
+        df_trials.groupby("ses_idx")["trial"].count().max() - 1
+    )
+    num_sessions = len(df_trials["ses_idx"].unique())
     num_input_features = 2
     # Pad trials to be ignored with -1
     xs = np.full((max_session_length, num_sessions, num_input_features), -1)
 
     # Load each session into xs
-    for dex, ses_idx in enumerate(df["ses_idx"].unique()):
-        temp = df.query("ses_idx == @ses_idx")
-        this_xs = (
-            temp[["animal_response", "rewarded"]].shift(-1).to_numpy()[:-1, :]
-        )
+    for dex, ses_idx in enumerate(df_trials["ses_idx"].unique()):
+        temp = df_trials.query("ses_idx == @ses_idx")
+        this_xs = temp[feature_cols].shift(-1).to_numpy()[:-1, :]
         xs[0 : len(this_xs), dex, :] = this_xs  # noqa E203
 
     # Determine size of output matrix
@@ -57,10 +79,10 @@ def create_disrnn_dataset(
     ys = np.full((max_session_length, num_sessions, num_output_features), -1)
 
     # Load each session into ys
-    for dex, ses_idx in enumerate(df["ses_idx"].unique()):
-        temp = df.query("ses_idx == @ses_idx")
+    for dex, ses_idx in enumerate(df_trials["ses_idx"].unique()):
+        temp = df_trials.query("ses_idx == @ses_idx")
         this_ys = temp[["animal_response"]].to_numpy()[1:, :]
-        ys[0 : len(this_ys), dex, :] = this_ys # noqa E203
+        ys[0 : len(this_ys), dex, :] = this_ys  # noqa E203
 
     # Pack into a DatasetRNN object
     dataset = rnn_utils.DatasetRNN(
@@ -68,7 +90,7 @@ def create_disrnn_dataset(
         xs=xs,
         y_type="categorical",
         n_classes=n_classes,
-        x_names=["prev choice", "prev reward"],
+        x_names=feature_labels,
         y_names=["choice"],
         batch_size=batch_size,
         batch_mode="random",
