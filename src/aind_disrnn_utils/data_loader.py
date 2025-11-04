@@ -2,8 +2,6 @@
 Tools for loading AIND dynamic foraging data into the disRNN format
 """
 
-from collections import OrderedDict
-
 import numpy as np
 from disentangled_rnns.library import rnn_utils
 
