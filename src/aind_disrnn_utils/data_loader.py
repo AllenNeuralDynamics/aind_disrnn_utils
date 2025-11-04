@@ -63,19 +63,18 @@ def create_disrnn_dataset(
 
     # Determine size of input matrix
     # Input matrix has size [# trials, # sessions, # features]
-    max_session_length = (
-        df_trials.groupby("ses_idx")["trial"].count().max() - 1
-    )
+    max_session_length = df_trials.groupby("ses_idx")["trial"].count().max()
+
     num_sessions = len(df_trials["ses_idx"].unique())
-    num_input_features = 2
+    num_input_features = len(feature_cols)
     # Pad trials to be ignored with -1
     xs = np.full((max_session_length, num_sessions, num_input_features), -1)
 
     # Load each session into xs
     for dex, ses_idx in enumerate(df_trials["ses_idx"].unique()):
         temp = df_trials.query("ses_idx == @ses_idx")
-        this_xs = temp[feature_cols].shift(-1).to_numpy()[:-1, :]
-        xs[0 : len(this_xs), dex, :] = this_xs  # noqa E203
+        this_xs = temp[feature_cols].to_numpy()[:-1, :]
+        xs[1 : len(temp), dex, :] = this_xs  # noqa E203
 
     # Determine size of output matrix
     # Output matrix has size [# trials, # sessions, # features]
@@ -86,8 +85,8 @@ def create_disrnn_dataset(
     # Load each session into ys
     for dex, ses_idx in enumerate(df_trials["ses_idx"].unique()):
         temp = df_trials.query("ses_idx == @ses_idx")
-        this_ys = temp[["animal_response"]].to_numpy()[1:, :]
-        ys[0 : len(this_ys), dex, :] = this_ys  # noqa E203
+        this_ys = temp[["animal_response"]].to_numpy()
+        ys[0 : len(temp), dex, :] = this_ys  # noqa E203
 
     # Pack into a DatasetRNN object
     dataset = rnn_utils.DatasetRNN(
@@ -100,4 +99,4 @@ def create_disrnn_dataset(
         batch_size=batch_size,
         batch_mode="random",
     )
-    return dataset
+    return dataset, xs, ys
