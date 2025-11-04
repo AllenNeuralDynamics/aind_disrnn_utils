@@ -8,7 +8,16 @@
 ![Python](https://img.shields.io/badge/python->=3.10-blue?logo=python)
 
 ## Usage
-... in progress ... 
+- Obtain a list of NWB files you wish to fit the model to
+```python
+import aind_dynamic_foraging_multisession_analysis.multisession_load as ms_load
+import aind_disrnn_utils as dl
+
+nwbs, df_trials = ms_load.make_multisession_trials_df(nwb_files)
+dataset = dl.create_disrnn_dataset(df_trials)
+```
+
+- You don't need to use `make_multisession_trials_df`, but the trials data frame does need to have a column "ses_idx" that splits trials into sessions. 
 
 ## Level of Support
  - Occasional updates: We are planning on occasional updating this tool with no fixed schedule. Community involvement is encouraged through both issues and pull requests.
