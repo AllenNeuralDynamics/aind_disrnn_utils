@@ -17,7 +17,7 @@ readme = "README.md"
 dynamic = ["version"]
 
 dependencies = [
-"disentangled_rnns @ git+https://github.com/google-deepmind/disentangled_rnns.git@main#egg=disentangled_rnns",
+    "numpy",
 ]
 
 [dependency-groups]
