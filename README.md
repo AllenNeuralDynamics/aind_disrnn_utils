@@ -42,3 +42,11 @@ Alternatively, if using `uv`, run
 ```bash
 uv sync
 ```
+
+### Required dependency
+> [!IMPORTANT]  
+> PyPi does not allow "direct dependencies" where you install straight from github, therefore you must manually install the disentangled_rnn package
+> ```bash
+> pip install git+https://github.com/google-deepmind/disentangled_rnns.git
+> ```
+
