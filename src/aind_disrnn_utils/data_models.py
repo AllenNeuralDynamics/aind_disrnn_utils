@@ -11,7 +11,9 @@ class disRNNInputSettings(BaseSettings, cli_parse_args=True):
     Pydantic settings model for input arguments.
     """
 
-    subject_id: int = Field(description="subject ids")
+    subject_ids: list[int] = Field(
+        default_factory=list, description="subject ids"
+    )
     n_steps: int = Field(default=3000, description="Number of training steps")
     n_warmup_steps: int = Field(
         default=1000, description="Number of noiseless training steps"
