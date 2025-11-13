@@ -47,6 +47,13 @@ class disRNNInputSettings(BaseSettings, cli_parse_args=True):
     multisubject: bool = Field(
         default=False, description="Whether to fit a multisubject disRNN"
     )
+    features: dict[str, str] = Field(
+        default_factory=lambda: {
+            "animal_response": "prev choice",
+            "rewarded": "prev reward",
+        },
+        description="input features for the RNN",
+    )
 
 
 class disRNNOutputSettings(BaseSettings):
