@@ -52,7 +52,7 @@ class disRNNInputSettings(BaseSettings, cli_parse_args=True):
             "animal_response": "prev choice",
             "rewarded": "prev reward",
         },
-        description="input features for the RNN",
+        description="input features for the RNN. Keys are column names of df_trials, values are labels",
     )
 
 
