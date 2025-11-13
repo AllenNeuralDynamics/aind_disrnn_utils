@@ -104,7 +104,10 @@ def create_disrnn_dataset(
 
 
 def load_model_results(df, network_states, yhat, ignore_policy="exclude"):
-    """ """
+    """
+    todo: fill out
+    todo: rename "df" to "df_trials"
+    """
     # Make sure input is the correct size
     if len(df["ses_idx"].unique()) != np.shape(yhat)[1]:
         raise Exception("number of sessions in df and yhat differ")
