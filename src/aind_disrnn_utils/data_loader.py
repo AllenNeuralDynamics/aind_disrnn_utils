@@ -116,12 +116,19 @@ def load_model_results(df, network_states, yhat, ignore_policy="exclude"):
         raise Exception(
             "Unknown combination of ignore_policy and yhat dimensions"
         )
+    num_latents = np.shape(network_states)[2]
+    columns = columns + ["latent_" + str(x + 1) for x in range(num_latents)]
 
     # Iterate through dimensions of yhat and load back into df_trials
     temps = []
     sessions = df["ses_idx"].unique()
     for index, session in enumerate(sessions):
-        temp_df = pd.DataFrame(yhat[:, index, :-1], columns=columns)
+        temp_df = pd.DataFrame(
+            np.concatenate(
+                [yhat[:, index, :-1], network_states[:, index, :]], axis=1
+            ),
+            columns=columns,
+        )
         temp_df["ses_idx"] = session
         if ignore_policy == "exclude":
             trials = np.array([-1] * len(temp_df))
