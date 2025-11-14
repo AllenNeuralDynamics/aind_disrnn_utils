@@ -2,6 +2,7 @@
 Defines data models for input and output settings
 """
 
+from typing import Literal
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
@@ -18,6 +19,23 @@ class disRNNInputSettings(BaseSettings, cli_parse_args=True):
     n_warmup_steps: int = Field(
         default=1000, description="Number of noiseless training steps"
     )
+    learning_rate: float = Field(
+        default=1e-3, description="Learning rate for optimization"
+    )
+    loss: Literal[
+        "mse",
+        "penalized_mse",
+        "categorical",
+        "penalized_categorical",
+        "hybrid",
+        "penalized_hybrid",
+    ] = Field(
+        default="penalized_categorical",
+        description="loss to use during training",
+    )
+    loss_param: Union[dict[str, int], float] = Field(
+        default=1.0, description="parameters for loss function"
+    )
     latent_penalty: float = Field(
         default=1e-2, description="hyperparameter for latent bottlenecks"
     )
@@ -32,13 +50,6 @@ class disRNNInputSettings(BaseSettings, cli_parse_args=True):
     update_net_latent_penalty: float = Field(
         default=1e-2,
         description="hyperparameter for update network latent bottlenecks",
-    )
-    learning_rate: float = Field(
-        default=1e-3, description="Learning rate for optimization"
-    )
-    ignore_policy: str = Field(
-        default="exclude",
-        description="Whether to include or exclude ignored trials",
     )
     num_latents: int = Field(default=5, description="Number of latents to use")
     update_net_n_units_per_layer: int = Field(
@@ -57,6 +68,10 @@ class disRNNInputSettings(BaseSettings, cli_parse_args=True):
     )
     activation: str = Field(
         default="leaky_relu", description="Activation function"
+    )
+    ignore_policy: str = Field(
+        default="exclude",
+        description="Whether to include or exclude ignored trials",
     )
     multisubject: bool = Field(
         default=False, description="Whether to fit a multisubject disRNN"
@@ -80,3 +95,4 @@ class disRNNOutputSettings(BaseSettings):
     likelihood: float = Field(description="evaluation set likelihood")
     num_sessions: int = Field(description="number of sessions in full dataset")
     num_trials: int = Field(description="number of trials")
+    random_key: list[int] = Field(description="jax random key")
