@@ -45,7 +45,7 @@ class disRNNInputSettings(BaseSettings, cli_parse_args=True):
     )
     update_net_obs_penalty: float = Field(
         default=1e-2,
-        description="hyperparameter for update network bottlenecks on observations",
+        description="hyperparameter for update network obs. bottlenecks",
     )
     update_net_latent_penalty: float = Field(
         default=1e-2,
