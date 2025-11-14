@@ -2,7 +2,7 @@
 Defines data models for input and output settings
 """
 
-from typing import Literal
+from typing import Literal, Union
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
