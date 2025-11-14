@@ -111,7 +111,7 @@ def load_model_results(
     into the trials dataframe so they can be analyzed.
 
     args:
-    df_trials (dataframe), the dataframe of trials from which the disrnn dataset
+    df_trials (dataframe), the trials dataframe from which the disrnn dataset
         was created. Must have columns `ses_idx`, `trials`, `animal_response`
     network_states (np array), the latent states of the network with dimensions
         (max_trial, sessions, num latents)
