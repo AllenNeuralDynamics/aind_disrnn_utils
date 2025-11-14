@@ -103,14 +103,25 @@ def create_disrnn_dataset(
     return dataset
 
 
-def load_model_results(df, network_states, yhat, ignore_policy="exclude"):
+def load_model_results(
+    df_trials, network_states, yhat, ignore_policy="exclude"
+):
     """
-    todo: fill out
-    todo: rename "df" to "df_trials"
+    Integrates the network_states and y-hat predictions from a disRNN model
+    into the trials dataframe so they can be analyzed.
+
+    args:
+    df_trials (dataframe), the dataframe of trials from which the disrnn dataset
+        was created. Must have columns `ses_idx`, `trials`, `animal_response`
+    network_states (np array), the latent states of the network with dimensions
+        (max_trial, sessions, num latents)
+    yhat (np array), the predictions of the network with dimensions
+        (max_trial, sessions, num_choices + 1)
+    ignore_policy (str) "exclude" or "include"
     """
     # Make sure input is the correct size
-    if len(df["ses_idx"].unique()) != np.shape(yhat)[1]:
-        raise Exception("number of sessions in df and yhat differ")
+    if len(df_trials["ses_idx"].unique()) != np.shape(yhat)[1]:
+        raise Exception("number of sessions in df_trials and yhat differ")
     if (ignore_policy == "exclude") and (np.shape(yhat)[2] == 3):
         columns = ["logit(left)", "logit(right)"]
     elif (ignore_policy == "include") and (np.shape(yhat)[2] == 4):
@@ -119,12 +130,14 @@ def load_model_results(df, network_states, yhat, ignore_policy="exclude"):
         raise Exception(
             "Unknown combination of ignore_policy and yhat dimensions"
         )
+
+    # Determine number of latents, and make column labels
     num_latents = np.shape(network_states)[2]
     columns = columns + ["latent_" + str(x + 1) for x in range(num_latents)]
 
     # Iterate through dimensions of yhat and load back into df_trials
     temps = []
-    sessions = df["ses_idx"].unique()
+    sessions = df_trials["ses_idx"].unique()
     for index, session in enumerate(sessions):
         temp_df = pd.DataFrame(
             np.concatenate(
@@ -136,7 +149,7 @@ def load_model_results(df, network_states, yhat, ignore_policy="exclude"):
         if ignore_policy == "exclude":
             trials = np.array([-1] * len(temp_df))
             x = (
-                df.query("ses_idx ==@session")
+                df_trials.query("ses_idx ==@session")
                 .query("animal_response in [0,1]")["trial"]
                 .values
             )
@@ -145,30 +158,44 @@ def load_model_results(df, network_states, yhat, ignore_policy="exclude"):
             temp_df["trial"] = x
         else:
             trials = np.array([-1] * len(temp_df))
-            x = df.query("ses_idx ==@session")["trial"].values
+            x = df_trials.query("ses_idx ==@session")["trial"].values
             trials[: len(x)] = x
             temp_df = temp_df[trials > 0].copy()
             temp_df["trial"] = x
         temps.append(temp_df)
     temp_df = pd.concat(temps)
-    df = pd.merge(df, temp_df, on=["ses_idx", "trial"], how="left")
+    df_trials = pd.merge(
+        df_trials, temp_df, on=["ses_idx", "trial"], how="left"
+    )
 
     if ignore_policy == "exclude":
         assert (
-            np.mean(df[df["logit(right)"].isnull()]["animal_response"].values)
+            np.mean(
+                df_trials[df_trials["logit(right)"].isnull()][
+                    "animal_response"
+                ].values
+            )
             == 2
         ), "NaN value for non-ignored trial"
         assert (
-            np.mean(df[df["logit(left)"].isnull()]["animal_response"].values)
+            np.mean(
+                df_trials[df_trials["logit(left)"].isnull()][
+                    "animal_response"
+                ].values
+            )
             == 2
         ), "NaN value for non-ignored trial"
         assert np.all(
-            df.query("animal_response == 2")["logit(right)"].isnull().values
+            df_trials.query("animal_response == 2")["logit(right)"]
+            .isnull()
+            .values
         ), "Non NaN value for ignored trial"
         assert np.all(
-            df.query("animal_response == 2")["logit(left)"].isnull().values
+            df_trials.query("animal_response == 2")["logit(left)"]
+            .isnull()
+            .values
         ), "Non NaN value for ignored trial"
     elif ignore_policy == "include":
-        assert np.sum(df["logit(right)"].isnull()) == 0, "NaN values"
-        assert np.sum(df["logit(left)"].isnull()) == 0, "NaN values"
-    return df
+        assert np.sum(df_trials["logit(right)"].isnull()) == 0, "NaN values"
+        assert np.sum(df_trials["logit(left)"].isnull()) == 0, "NaN values"
+    return df_trials
