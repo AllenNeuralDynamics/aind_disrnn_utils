@@ -18,7 +18,21 @@ class disRNNInputSettings(BaseSettings, cli_parse_args=True):
     n_warmup_steps: int = Field(
         default=1000, description="Number of noiseless training steps"
     )
-    beta: float = Field(default=1e-2, description="hyperparameter")
+    latent_penalty: float = Field(
+        default=1e-2, description="hyperparameter for latent bottlenecks"
+    )
+    choice_net_latent_penalty: float = Field(
+        default=1e-2,
+        description="hyperparameter for choice network bottlencks",
+    )
+    update_net_obs_penalty: float = Field(
+        default=1e-2,
+        description="hyperparameter for update network bottlenecks on observations",
+    )
+    update_net_latent_penalty: float = Field(
+        default=1e-2,
+        description="hyperparameter for update network latent bottlenecks",
+    )
     learning_rate: float = Field(
         default=1e-3, description="Learning rate for optimization"
     )
