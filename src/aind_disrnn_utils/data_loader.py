@@ -160,7 +160,7 @@ def load_model_results(
             trials = np.array([-1] * len(temp_df))
             x = df_trials.query("ses_idx ==@session")["trial"].values
             trials[: len(x)] = x
-            temp_df = temp_df[trials > 0].copy()
+            temp_df = temp_df[trials >= 0].copy()
             temp_df["trial"] = x
         temps.append(temp_df)
     temp_df = pd.concat(temps)
