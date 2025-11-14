@@ -103,7 +103,7 @@ def create_disrnn_dataset(
     return dataset
 
 
-def load_model_results(
+def add_model_results(
     df_trials, network_states, yhat, ignore_policy="exclude"
 ):
     """
@@ -125,7 +125,7 @@ def load_model_results(
     if (ignore_policy == "exclude") and (np.shape(yhat)[2] == 3):
         columns = ["logit(left)", "logit(right)"]
     elif (ignore_policy == "include") and (np.shape(yhat)[2] == 4):
-        columns = ["logit(left)", "logit(right)", "ignored"]
+        columns = ["logit(left)", "logit(right)", "logit(ignore)"]
     else:
         raise Exception(
             "Unknown combination of ignore_policy and yhat dimensions"

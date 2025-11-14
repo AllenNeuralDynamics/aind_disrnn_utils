@@ -24,7 +24,7 @@ dataset = dl.create_disrnn_dataset(df_trials)
 This Code Ocean Capsule can be used for loading a list of sessions and saving the result as a dataframe: [Code Ocean Capsule](https://codeocean.allenneuraldynamics.org/capsule/4447096/tree)
 
 The resulting data assets can be used like:
-```
+```python
 import pandas as pd
 import aind_disrnn_utils.data_loader as dl
 df = pd.read('/data/disrnn_dataset_774212/disrnn_dataset.csv')
@@ -40,7 +40,7 @@ disrnn_dataset_778077 | 778077 | 8336 | 15 | 76fc65d3-eec4-4578-a20d-499193fc920
 
 
 The datasets can be combined to fit easily:
-```
+```python
 import pandas as pd
 import aind_disrnn_utils.data_loader as dl
 
@@ -51,6 +51,13 @@ for mouse in mice:
 df = pd.concat(dfs)
 dataset = dl.create_disrrn_dataset(df)
 
+```
+
+## Saving results
+
+After fitting the network, you can add the latent states and predictions back into the dataframe of trials:
+```python
+df_trials = dl.add_model_results(df_trials, network_states.__array__(), yhat, ignore_policy=ignore_policy)
 ```
 
 # Installation
@@ -73,13 +80,6 @@ Alternatively, if using `uv`, run
 ```bash
 uv sync
 ```
-
-### Required dependency
-> [!IMPORTANT]  
-> PyPi does not allow "direct dependencies" where you install straight from github, therefore you must manually install the disentangled_rnn package
-> ```bash
-> pip install git+https://github.com/google-deepmind/disentangled_rnns.git
-> ```
 
 ## Level of Support
  - Occasional updates: We are planning on occasional updating this tool with no fixed schedule. Community involvement is encouraged through both issues and pull requests.
