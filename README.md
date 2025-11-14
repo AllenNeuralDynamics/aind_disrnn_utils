@@ -53,6 +53,13 @@ dataset = dl.create_disrrn_dataset(df)
 
 ```
 
+## Saving results
+
+After fitting the network, you can add the latent states and predictions back into the dataframe of trials:
+```python
+df_trials = dl.add_model_results(df_trials, network_states.__array__(), yhat, ignore_policy=ignore_policy)
+```
+
 # Installation
 To install the software from PyPi
 ```bash
