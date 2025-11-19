@@ -27,7 +27,7 @@ The resulting data assets can be used like:
 ```python
 import pandas as pd
 import aind_disrnn_utils.data_loader as dl
-df = pd.read('/data/disrnn_dataset_774212/disrnn_dataset.csv')
+df = pd.read_csv('/data/disrnn_dataset_774212/disrnn_dataset.csv')
 dataset = dl.create_disrrn_dataset(df)
 ```
 Dataset name| mouse id | # trials | # sessions | data asset ID | Task |
