@@ -91,8 +91,8 @@ def create_disrnn_dataset(
 
     # Pack into a DatasetRNN object
     dataset = rnn_utils.DatasetRNN(
-        ys=ys,
-        xs=xs,
+        ys=ys.astype(float),
+        xs=xs.astype(float),
         y_type="categorical",
         n_classes=n_classes,
         x_names=feature_labels,
