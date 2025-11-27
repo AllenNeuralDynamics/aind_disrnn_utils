@@ -8,7 +8,11 @@ from disentangled_rnns.library import rnn_utils
 
 
 def create_disrnn_dataset(
-    df_trials, ignore_policy="include", batch_size=None, features=None
+    df_trials,
+    ignore_policy="include",
+    batch_size=None,
+    batch_mode="random",
+    features=None,
 ) -> rnn_utils.DatasetRNN:
     """
     Creates a disrnn dataset object
@@ -98,7 +102,7 @@ def create_disrnn_dataset(
         x_names=feature_labels,
         y_names=["choice"],
         batch_size=batch_size,
-        batch_mode="random",
+        batch_mode=batch_mode,
     )
     return dataset
 
