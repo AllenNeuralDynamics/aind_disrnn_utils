@@ -172,7 +172,9 @@ def add_model_results(
         df_trials, temp_df, on=["ses_idx", "trial"], how="left"
     )
 
-    if ignore_policy == "exclude":
+    if ignore_policy == "exclude" and np.any(
+        df_trials["animal_response"] == 2
+    ):
         assert (
             np.mean(
                 df_trials[df_trials["logit(right)"].isnull()][
